@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/icon_user"
+        android:icon="@drawable/export"
+        android:title="@string/icon_export"/>
+
+
+    <item android:id="@+id/app_name"
+        android:title="@string/app_name"/>
+
+</menu>
