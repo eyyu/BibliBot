@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Biblibot</string>
+
+    <string name="citation_prompt">Choose a citation style</string>
+    <string-array name="citation_choices">
+        <item>MLA</item>
+        <item>APA</item>
+        <item>Chicago</item>
+    </string-array>
+
+    <string name="source_prompt">Choose source</string>
+    <string-array name="source_choices">
+        <item>Website</item>
+        <item>Video</item>
+        <item>Journal/Blog</item>
+        <item>Article</item>
+    </string-array>
+</resources>
