@@ -41,11 +41,13 @@ public class MainActivity extends AppCompatActivity {
         if(result.getContents() == null)
         {
             Log.d("MainActivity", "cancelled scan");
-            Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+
         }
         else
         {
             super.onActivityResult(requestCode, resultCode, data);
+            Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+            Log.d("MainActivity", result.getContents());
         }
     }
 }
