@@ -1,5 +1,6 @@
 package com.comp3711.eva.biblibot;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -12,12 +13,14 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectView extends ListActivity {
+public class ProjectView extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project_view);
+
+        ListView lv = (ListView) findViewById(R.id.list_view);
 
         ArrayList<String> projectList = new ArrayList<>();
         projectList.add("Project one");
@@ -25,9 +28,7 @@ public class ProjectView extends ListActivity {
 
         // Binding resources Array to ListAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, projectList);
-        setListAdapter(adapter);
-
-        ListView lv = getListView();
+        lv.setAdapter(adapter);
 
         // listening to single list item on click
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {

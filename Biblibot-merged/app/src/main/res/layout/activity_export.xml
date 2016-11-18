@@ -131,8 +131,6 @@
                 android:layout_alignParentTop="true" />
         </ScrollView>
 
-
-
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
