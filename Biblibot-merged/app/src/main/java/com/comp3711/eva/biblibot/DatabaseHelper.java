@@ -17,7 +17,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
@@ -31,19 +33,23 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static final String DBNAME       = "biblibot.db";
     private static final int    VERSION      = 1;
 
+    private static final String TABLE_CITATIONTYPE          = "CITATIONTYPE";
     private static final String TABLE_PROJECT               = "PROJECT";
     private static final String TABLE_CITATION              = "CITATION";
     private static final String TABLE_AUTHOR                = "AUTHOR";
+    private static final String TABLE_CONTRIBUTOR           = "CONTRIBUTOR";
     private static final String TABLE_CITATIONAUTHOR        = "CITATIONAUTHOR";
     private static final String TABLE_CITATIONCONTRIBUTOR   = "CITATIONCONTRIBUTOR";
     private static final String TABLE_PROJECTCITATION       = "PROJECTCITATION";
 
 
-    private static final String KEY_ID          = "_id"
-    private static final String KEY_PROJECTID   = "PROJECTID";
-    private static final String KEY_CITATIONID  = "CITATIONID";
-    private static final String KEY_AUTHORID    = "AUTHORID";
+    private static final String KEY_ID              = "_id";
+    private static final String KEY_PROJECTID       = "PROJECTID";
+    private static final String KEY_CITATIONID      = "CITATIONID";
+    private static final String KEY_AUTHORID        = "AUTHORID";
+    private static final String KEY_CONTRIBUTORID   = "CONTRIBUTORID";
 
+    private static final String KEY_TYPE       = "TYPE";
     private static final String KEY_NAME       = "NAME";
     private static final String KEY_DATE       = "DATE";
 
@@ -54,6 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static final String KEY_CONTAINTER  = "CONTAINTER";
     private static final String KEY_TITLE       = "TITLE";
     private static final String KEY_SUBTITLE    = "SUBTITLE";
+    private static final String KEY_VERSION     = "VERSION";
     private static final String KEY_VOLUME      = "VOLUME";
     private static final String KEY_ISSUE       = "ISSUE";
     private static final String KEY_PAGES       = "PAGES";
@@ -71,12 +78,18 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static boolean hasValues = false;
 
 
-    private static final String CREATE_TABLE_PROJECT =
-            "CREATE TABLE IF NOT EXISTS " + TABLE_COURSE + " (" +
+    private static final String CREATE_TABLE_CITATIONTYPE =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_CITATIONTYPE + " (" +
                     KEY_ID      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    KEY_NAME   + " TEXT " +
+                    KEY_TYPE    + " TEXT " +
+           ")";
+
+    private static final String CREATE_TABLE_PROJECT =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_PROJECT + " (" +
+                    KEY_ID      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    KEY_NAME   + " TEXT, " +
                     KEY_DATE   + " TEXT"+
-                    ")";
+            ")";
 
     private static final String CREATE_TABLE_CITATION =
             "CREATE TABLE IF NOT EXISTS " + TABLE_CITATION + " (" +
@@ -85,6 +98,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     KEY_CONTAINTER    + " TEXT, " +
                     KEY_TITLE         + " TEXT, " +
                     KEY_SUBTITLE      + " TEXT, " +
+                    KEY_VERSION       + " REAL, " +
                     KEY_VOLUME        + " INTEGER, " +
                     KEY_ISSUE         + " INTEGER, " +
                     KEY_PAGES         + " TEXT, " +
@@ -98,7 +112,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     KEY_ACCESSYEAR    + " INTEGER, " +
                     KEY_ACCESSDAY     + " INTEGER, " +
                     KEY_ACCESSMONTH   + " INTEGER, "   +
-                    "FOREIGN KEY (" + KEY_TYPEID + ") REFERENCES" + TABLE_TYPE + "(" KEY_ID ")"
+                    "FOREIGN KEY (" + KEY_TYPEID + ") REFERENCES"
+                        + TABLE_CITATIONTYPE + "(" + KEY_ID + ")"+
         ")";
 
 
@@ -125,8 +140,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     "FOREIGN KEY (" + KEY_CITATIONID + ") REFERENCES "
                     + TABLE_CITATION + "(" + KEY_ID + "), " +
                     "FOREIGN KEY (" + KEY_AUTHORID + ") REFERENCES "
-                    + TABLE_AUTHOR   + "("  + KEY_ID + ")"
-    ")";
+                    + TABLE_AUTHOR   + "("  + KEY_ID + ")" +
+            ")";
 
     private static final String CREATE_TABLE_CITATIONCONTRIBUTOR =
             "CREATE TABLE IF NOT EXISTS " + TABLE_CITATIONCONTRIBUTOR + " (" +
@@ -136,8 +151,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     "FOREIGN KEY (" + KEY_CITATIONID + ") REFERENCES "
                     + TABLE_CITATION    + "(" + KEY_ID + "), " +
                     "FOREIGN KEY (" + KEY_CONTRIBUTORID + ") REFERENCES "
-                    + TABLE_CONTRIBUTOR + "(" + KEY_ID + ")"
-    ")";
+                    + TABLE_CONTRIBUTOR + "(" + KEY_ID + ")" +
+            ")";
 
     private static final String CREATE_TABLE_PROJECTCITATION =
             "CREATE TABLE IF NOT EXISTS " + TABLE_PROJECTCITATION + " (" +
@@ -147,8 +162,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     "FOREIGN KEY ("  + KEY_PROJECTID + ") REFERENCES "
                     + TABLE_PROJECT   + "(" + KEY_ID + "), " +
                     "FOREIGN KEY ("  + KEY_CITATIONID + ") REFERENCES "
-                    + TABLE_CITATION  + "(" + KEY_ID + ")"
-    ")";
+                    + TABLE_CITATION  + "(" + KEY_ID + ")" +
+            ")";
 
 
     public DatabaseHelper(Context context) {
@@ -158,6 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_TABLE_CITATIONTYPE);
         db.execSQL(CREATE_TABLE_PROJECT);
         db.execSQL(CREATE_TABLE_CITATION);
         db.execSQL(CREATE_TABLE_AUTHOR);
@@ -176,6 +192,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_AUTHOR );
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITATION );
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROJECT );
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_CITATIONTYPE);
         onCreate(db);
     }
 
@@ -185,12 +202,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
         ContentValues cv = new ContentValues();
         cv.put ( KEY_TYPE , typeName );
 
-        if  ( db.insert(TABLE_TYPE, null, cv) < 0 )
+        if  ( db.insert(TABLE_CITATIONTYPE, null, cv) < 0 )
         {
             return false;
         }
 
         db.close();
+        return true;
     }
 
     private boolean insertCitationAuthor(int citId, int authId)
@@ -205,6 +223,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             return false;
         }
         db.close();
+        return true;
     }
 
     private boolean insertCitationContributor(int citId, int contribId)
@@ -219,6 +238,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             return false;
         }
         db.close();
+        return true;
     }
 
     private boolean insertCitationProject(int citId, int proId){
@@ -232,6 +252,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             return false;
         }
         db.close();
+        return true;
     }
 
     public boolean insertAuthor(String fName, String lName )
@@ -246,6 +267,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             return false;
         }
         db.close();
+        return true;
     }
 
     public boolean insertContributor(String fName, String lName, String title)
@@ -261,50 +283,51 @@ public class DatabaseHelper extends SQLiteOpenHelper
             return false;
         }
         db.close();
+        return true;
     }
 
     public boolean insertProject(String name)
     {
+        Date date = new Date();
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put ( KEY_NAME , name );
-        cv.put ( KEY_DATE , Date.getDate().toString() );
+        cv.put ( KEY_DATE , date.toString() );
 
         if  ( db.insert(TABLE_PROJECT, null, cv) < 0 )
         {
             return false;
         }
         db.close();
+        return true;
     }
 
-    public boolean insertCitation(Citation c,
-                                  String AuthorFname,
-                                  String AuthorLname,
-                                  String ContributorFname,
-                                  String ContributorLname,
-                                  String ContributorTitle )
+    public boolean insertCitation(Citation c) //,
+                                  //Author [] authors,
+                                  //Contributor [] contribs )
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        int typeId = getCitationTypeId(c.type);
-        cv.put ( KEY_TYPEID       , c.getxxxx() );
-        cv.put ( KEY_CONTAINTER   , c.getxxxx() );
-        cv.put ( KEY_TITLE        , c.getxxxx() );
-        cv.put ( KEY_SUBTITLE     , c.getxxxx() );
-        cv.put ( KEY_VOLUME       , c.getxxxx() );
-        cv.put ( KEY_ISSUE        , c.getxxxx() );
-        cv.put ( KEY_PAGES        , c.getxxxx() );
-        cv.put ( KEY_URL          , c.getxxxx() );
-        cv.put ( KEY_DOI          , c.getxxxx() );
-        cv.put ( KEY_LOCATION     , c.getxxxx() );
-        cv.put ( KEY_PUBLISHER    , c.getxxxx() );
-        cv.put ( KEY_PUBYEAR      , c.getxxxx() );
-        cv.put ( KEY_PUBDAY       , c.getxxxx() );
-        cv.put ( KEY_PUBMONTH     , c.getxxxx() );
-        cv.put ( KEY_ACCESSYEAR   , c.getxxxx() );
-        cv.put ( KEY_ACCESSDAY    , c.getxxxx() );
-        cv.put ( KEY_ACCESSMONTH  , c.getxxxx() );
+        int typeId = getCitationTypeId(c.getType());
+        cv.put ( KEY_TYPEID       , typeId );
+        cv.put ( KEY_CONTAINTER   , c.getContainer() );
+        cv.put ( KEY_TITLE        , c.getTitle() );
+        cv.put ( KEY_SUBTITLE     , c.getSubtitle());
+        cv.put ( KEY_VOLUME       , c.getVolume());
+        cv.put ( KEY_VERSION      , c.getVersion());
+        cv.put ( KEY_ISSUE        , c.getIssue());
+        cv.put ( KEY_PAGES        , c.getPages());
+        cv.put ( KEY_URL          , c.getUrl());
+        cv.put ( KEY_DOI          , c.getDoi());
+        cv.put ( KEY_LOCATION     , c.getLocation());
+        cv.put ( KEY_PUBLISHER    , c.getPublisher());
+        cv.put ( KEY_PUBYEAR      , c.getPubYear());
+        cv.put ( KEY_PUBDAY       , c.getPubDay());
+        cv.put ( KEY_PUBMONTH     , c.getPubMonth());
+        cv.put ( KEY_ACCESSYEAR   , c.getAccessYear());
+        cv.put ( KEY_ACCESSDAY    , c.getAccessDay());
+        cv.put ( KEY_ACCESSMONTH  , c.getAccessMonth());
 
         if  ( db.insert(TABLE_CITATION, null, cv) < 0 )
         {
@@ -314,26 +337,47 @@ public class DatabaseHelper extends SQLiteOpenHelper
         db.close();
         return true;
     }
+    private int getCitationTypeId(String Type)
+    {
+        int typeId;
+        final SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + KEY_ID + " FROM " + TABLE_CITATIONTYPE + " WHERE "
+                + KEY_TYPE + " = '" + Type + "'";
+
+        Log.e("SQL QUERY", selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+        {
+            c.moveToFirst();
+        }
+        typeId = c.getInt(c.getColumnIndex(KEY_ID));
+        return typeId;
+    }
 
     public Citation[] getCitationsByProjectName(final String projectName)
     {
         final SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<Citations> citations = new ArrayList();
+        ArrayList <Citation> citations = new ArrayList();
         String selectQuery =
                 "SELECT * FROM " + TABLE_CITATION +
                         " C JOIN "  + TABLE_PROJECTCITATION +
                         " PC ON C." + KEY_ID + " = PC." + KEY_CITATIONID +
                         " WHERE PC."  + KEY_PROJECTID +
                         "= (" +
-                        "SELECT"  + KEY_ID   + " FROM " TABLE_PROJECT +
-            " WHERE " + KEY_NAME + "= '" + projectName +
-            "');";
-        return citations.toArray();
+                            "SELECT"  + KEY_ID   + " FROM " + TABLE_PROJECT +
+                            " WHERE " + KEY_NAME + "= '" + projectName + "');";
+
+        Citation []list = new Citation[citations.size()];
+        list = citations.toArray(list);
+        return list;
     }
 
     public Citation getCitationByTitle(String citationTitle) {
         final SQLiteDatabase db = this.getReadableDatabase();
-
+        Citation citation = new Citation();
         String selectQuery = "SELECT  * FROM " + TABLE_CITATION + " WHERE "
                 + KEY_TITLE + " = '" + citationTitle + "'";
 
@@ -345,40 +389,54 @@ public class DatabaseHelper extends SQLiteOpenHelper
         {
             c.moveToFirst();
         }
+        
+        int typeId = c.getInt(c.getColumnIndex(KEY_TYPEID));
+        String Type;
+        if (  typeId == 0 )
+        {
+            Type = "BOOK";
+        }
+        else if (typeId == 1) {
+            Type = "PERIODICAL";
+        }
+        else {
+            Type = "ELECTRONIC";
+        }
+
+        citation.setType( Type );
+        citation.setContainer( (c.getString(c.getColumnIndex(KEY_CONTAINTER))));
+        citation.setTitle( (c.getString(c.getColumnIndex(KEY_TITLE))));
+        citation.setSubtitle( (c.getString(c.getColumnIndex(KEY_SUBTITLE))));
+        citation.setVolume( (c.getInt(c.getColumnIndex(KEY_VOLUME))));
+        citation.setVersion((c.getDouble(c.getColumnIndex(KEY_VERSION))));
+        citation.setIssue( (c.getInt(c.getColumnIndex(KEY_ISSUE))));
+        citation.setPages( (c.getInt(c.getColumnIndex(KEY_PAGES))));
+        citation.setUrl( (c.getString(c.getColumnIndex(KEY_URL))));
+        citation.setDoi( (c.getString(c.getColumnIndex(KEY_DOI))));
+        citation.setLocation( (c.getString(c.getColumnIndex(KEY_LOCATION))));
+        citation.setPublisher( (c.getString(c.getColumnIndex(KEY_PUBLISHER))));
+        citation.setPubYear( (c.getInt(c.getColumnIndex(KEY_PUBYEAR))));
+        citation.setPubDay( (c.getInt(c.getColumnIndex(KEY_PUBDAY))));
+        citation.setPubMonth( (c.getInt(c.getColumnIndex(KEY_PUBMONTH))));
+        citation.setAccessYear( (c.getInt(c.getColumnIndex(KEY_ACCESSYEAR))));
+        citation.setAccessDay( (c.getInt(c.getColumnIndex(KEY_ACCESSDAY))));
+        citation.setAccessMonth( (c.getInt(c.getColumnIndex(KEY_ACCESSMONTH))));
 
 
-        Citation citation = new Citation();
-
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_TYPEID))));
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_CONTAINTER))));
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_TITLE))));
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_SUBTITLE))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_VOLUME))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_ISSUE))));
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_PAGES))));
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_URL))));
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_DOI))));
-        citation.setXXX( (c.getString(c.getColumnIndex(KEY_LOCATION))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_PUBLISHER))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_PUBYEAR))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_PUBDAY))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_PUBMONTH))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_ACCESSYEAR))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_ACCESSDAY))));
-        citation.setXXX( (c.getInt(c.getColumnIndex(KEY_ACCESSMONTH))));
         db.close();
 
         return citation;
 
     }
 
-    public ArrayList<String> getCoursesInTerm( int term )
+    public String[] getAllProjects()
     {
-        ArrayList<String> list= new ArrayList<>();
+        ArrayList<String> projNamesList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT * FROM " + TABLE_COURSE +
-                " WHERE " + KEY_TERMNO + " = " + term;
+        String selectQuery = "SELECT * DISTINCT "  +
+                KEY_NAME +
+                " FROM " + TABLE_PROJECT ;
 
         Log.e("SQL QUERY", selectQuery);
 
@@ -386,40 +444,20 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
         if (c.moveToFirst()) {
             do {
-                list.add(((c.getString(c.getColumnIndex(KEY_COURSEID)))));
+                String pName = c.getString(c.getColumnIndex(KEY_NAME));
+                projNamesList.add(pName);
             } while (c.moveToNext());
         }
         db.close();
-        return list;
-    }
-
-    public ArrayList<String> getAllTerms()
-    {
-        ArrayList<String> list= new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String selectQuery = "SELECT DISTINCT "  +
-                KEY_TERMNO +
-                " FROM " + TABLE_COURSE ;
-
-        Log.e("SQL QUERY", selectQuery);
-
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c.moveToFirst()) {
-            do {
-                int term = c.getInt(c.getColumnIndex(KEY_TERMNO));
-                list.add("TERM " + term);
-            } while (c.moveToNext());
-        }
-        db.close();
+        String []list = new String[projNamesList.size()];
+        list = projNamesList.toArray(list);
         return list;
     }
 
     public void checkIsSet(){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT COUNT(*) FROM " + TABLE_TYPE;
+        String selectQuery = "SELECT COUNT(*) FROM " + TABLE_CITATIONTYPE;
 
         Log.e("SQL QUERY", selectQuery);
 
@@ -436,6 +474,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     public void createTypeVals()
     {
-
+        insertType("BOOK");
+        insertType("ELECTRONIC");
+        insertType("PERIODICIAL");
     }
 }

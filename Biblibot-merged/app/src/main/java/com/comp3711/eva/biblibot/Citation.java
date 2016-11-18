@@ -7,24 +7,32 @@ package com.comp3711.eva.biblibot;
 public class Citation {
     private String   fName;
     private String   lName;
+    private String   type;
     private char     initial;
     private String   title;
     private String   publisher;
-    private String   pudDate;
-    private String   volume;
-    private String   issue;
+    private int   volume;
+    private int   issue;
     private String   container;
-    private String   version;
+    private double   version;
     private String   location;
     private String[] contributors;
+    private String[] authors;
     private String   accessDate;
     private String   subtitle;
     private String   artTitle;
     private String   perTitle;
     private String   url;
-    private String   pages;
-    private String   pubYear;
-    private String   pubDateOrAccessDate;
+    private String   doi;
+    private int      pages;
+    private int      pubYear;
+    private int      pubMonth;
+    private int      pubDay;
+    private int      accessYear;
+    private int      accessMonth;
+    private int      accessDay;
+
+    private int      AccessDate;
 
     public String getfName() {
         return fName;
@@ -66,27 +74,19 @@ public class Citation {
         this.publisher = publisher;
     }
 
-    public String getPudDate() {
-        return pudDate;
-    }
-
-    public void setPudDate(String pudDate) {
-        this.pudDate = pudDate;
-    }
-
-    public String getVolume() {
+    public int getVolume() {
         return volume;
     }
 
-    public void setVolume(String volume) {
+    public void setVolume(int volume) {
         this.volume = volume;
     }
 
-    public String getIssue() {
+    public int getIssue() {
         return issue;
     }
 
-    public void setIssue(String issue) {
+    public void setIssue(int issue) {
         this.issue = issue;
     }
 
@@ -98,11 +98,11 @@ public class Citation {
         this.container = container;
     }
 
-    public String getVersion() {
+    public double getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(double version) {
         this.version = version;
     }
 
@@ -162,27 +162,84 @@ public class Citation {
         this.url = url;
     }
 
-    public String getPages() {
+    public int getPages() {
         return pages;
     }
 
-    public void setPages(String pages) {
+    public void setPages(int pages) {
         this.pages = pages;
     }
 
-    public String getPubYear() {
+    public int getPubYear() {
         return pubYear;
     }
 
-    public void setPubYear(String pubYear) {
+    public void setPubYear(int pubYear) {
         this.pubYear = pubYear;
     }
 
-    public String getPubDateOrAccessDate() {
-        return pubDateOrAccessDate;
+
+    public int getPubMonth() {
+        return pubMonth;
     }
 
-    public void setPubDateOrAccessDate(String pubDateOrAccessDate) {
-        this.pubDateOrAccessDate = pubDateOrAccessDate;
+    public void setPubMonth(int pubMonth) {
+        this.pubMonth = pubMonth;
+    }
+
+    public int getPubDay() {
+        return pubDay;
+    }
+
+    public void setPubDay(int pubDay) {
+        this.pubDay = pubDay;
+    }
+
+    public int getAccessYear() {
+        return accessYear;
+    }
+
+    public void setAccessYear(int accessYear) {
+        this.accessYear = accessYear;
+    }
+
+    public int getAccessMonth() {
+        return accessMonth;
+    }
+
+    public void setAccessMonth(int accessMonth) {
+        this.accessMonth = accessMonth;
+    }
+
+    public int getAccessDay() {
+        return accessDay;
+    }
+
+    public void setAccessDay(int accessDay) {
+        this.accessDay = accessDay;
+    }
+
+    public String[] getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(String[] authors) {
+        this.authors = authors;
+    }
+
+    public String getDoi() {
+        return doi;
+    }
+
+    public void setDoi(String doi) {
+        this.doi = doi;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
