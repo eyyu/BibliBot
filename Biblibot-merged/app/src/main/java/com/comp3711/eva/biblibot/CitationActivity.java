@@ -13,10 +13,15 @@ import com.google.zxing.integration.android.IntentResult;
 
 public class CitationActivity extends AppCompatActivity {
 
+    DatabaseHelper dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citation);
+
+//        dbHelper = new DatabaseHelper(getApplicationContext());
+//        dbHelper.checkIsSet();
     }
 
     public void scan(final View view) {
