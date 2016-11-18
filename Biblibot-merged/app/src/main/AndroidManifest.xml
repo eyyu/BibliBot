@@ -28,9 +28,9 @@
         <activity
             android:name=".BarcodeScanner"
             android:label="Barcode Scanner" />
-        <activity
-            android:name=".Login"
-            android:label="@string/title_activity_landing"></activity>
+        <activity android:name=".ProjectView" />
+        <activity android:name=".LoginPage" />
+        <activity android:name=".CitationView"></activity>
     </application>
 
 </manifest>

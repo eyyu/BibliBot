@@ -59,7 +59,12 @@ public class CitationActivity extends AppCompatActivity {
     }
 
     public void login(final View view) {
-        Intent login = new Intent(getApplicationContext(), Login.class);
+        Intent login = new Intent(getApplicationContext(), LoginPage.class);
         startActivity(login);
+    }
+
+    public void projectView(final View view) {
+        Intent projects = new Intent(getApplicationContext(), ProjectView.class);
+        startActivity(projects);
     }
 }
