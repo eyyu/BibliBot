@@ -389,7 +389,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         {
             c.moveToFirst();
         }
-        
+
         int typeId = c.getInt(c.getColumnIndex(KEY_TYPEID));
         String Type;
         if (  typeId == 0 )
@@ -410,7 +410,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         citation.setVolume( (c.getInt(c.getColumnIndex(KEY_VOLUME))));
         citation.setVersion((c.getDouble(c.getColumnIndex(KEY_VERSION))));
         citation.setIssue( (c.getInt(c.getColumnIndex(KEY_ISSUE))));
-        citation.setPages( (c.getInt(c.getColumnIndex(KEY_PAGES))));
+        citation.setPages( (c.getString(c.getColumnIndex(KEY_PAGES))));
         citation.setUrl( (c.getString(c.getColumnIndex(KEY_URL))));
         citation.setDoi( (c.getString(c.getColumnIndex(KEY_DOI))));
         citation.setLocation( (c.getString(c.getColumnIndex(KEY_LOCATION))));
@@ -470,12 +470,39 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         db.close();
         createTypeVals();
+        insertFillerCiations();
     }
 
-    public void createTypeVals()
+    private void createTypeVals()
     {
         insertType("BOOK");
         insertType("ELECTRONIC");
         insertType("PERIODICIAL");
     }
+
+    private void insertFillerCiations()
+    {
+        Citation c;
+        for (int i = 0; i < 5 ; i++ ) {
+            c = new Citation();
+            c.setContainer("testContainer1" + i);
+            c.setTitle("testTitle1" + i);
+            c.setSubtitle("testSubtitle1" + i);
+            c.setVolume(i);
+            c.setVersion(i + i / 10 );
+            c.setIssue(i);
+            c.setPages("testPages1" + i);
+            c.setUrl("testUrl1" + i);
+            c.setDoi("testDoi1" + i);
+            c.setLocation("testLocation1" + i);
+            c.setPublisher("testPublisher1" + i);
+            c.setPubYear(2000 + i);
+            c.setPubDay(i);
+            c.setPubMonth(i + 10);
+            c.setAccessYear(2000 + i);
+            c.setAccessDay( i);
+            c.setAccessMonth(10 + i);
+        }
+    }
+
 }

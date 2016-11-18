@@ -24,7 +24,7 @@ public class Citation {
     private String   perTitle;
     private String   url;
     private String   doi;
-    private int      pages;
+    private String      pages;
     private int      pubYear;
     private int      pubMonth;
     private int      pubDay;
@@ -162,11 +162,11 @@ public class Citation {
         this.url = url;
     }
 
-    public int getPages() {
+    public String getPages() {
         return pages;
     }
 
-    public void setPages(int pages) {
+    public void setPages(String pages) {
         this.pages = pages;
     }
 
