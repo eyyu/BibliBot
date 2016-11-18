@@ -107,4 +107,26 @@
         android:layout_toStartOf="@+id/usertxt"
         android:onClick="login"/>
 
+    <TextView
+        android:text="Projects List"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/usertxt"
+        android:layout_toRightOf="@+id/projects"
+        android:layout_toEndOf="@+id/projects"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
+        android:id="@+id/projectslist"
+        android:onClick="projectView"/>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/projects"
+        android:id="@+id/projects"
+        android:onClick="projectView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

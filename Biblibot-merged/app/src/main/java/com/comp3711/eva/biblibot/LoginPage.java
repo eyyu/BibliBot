@@ -38,7 +38,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class LoginPage extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -66,7 +66,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_login_page);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -87,7 +87,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                projectView(view);
             }
         });
 
@@ -274,7 +274,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(Login.this,
+                new ArrayAdapter<>(LoginPage.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
@@ -351,6 +351,11 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
     public void generate(final View view) {
         Intent export = new Intent(getApplicationContext(), CitationActivity.class);
         startActivity(export);
+    }
+
+    public void projectView(final View view) {
+        Intent project = new Intent(getApplicationContext(), ProjectView.class);
+        startActivity(project);
     }
 }
 
