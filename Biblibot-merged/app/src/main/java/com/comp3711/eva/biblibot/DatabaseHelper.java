@@ -112,7 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     KEY_ACCESSYEAR    + " INTEGER, " +
                     KEY_ACCESSDAY     + " INTEGER, " +
                     KEY_ACCESSMONTH   + " INTEGER, "   +
-                    "FOREIGN KEY (" + KEY_TYPEID + ") REFERENCES"
+                    "FOREIGN KEY (" + KEY_TYPEID + ") REFERENCES "
                         + TABLE_CITATIONTYPE + "(" + KEY_ID + ")"+
         ")";
 
@@ -172,28 +172,47 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_CITATIONTYPE);
-        db.execSQL(CREATE_TABLE_PROJECT);
-        db.execSQL(CREATE_TABLE_CITATION);
-        db.execSQL(CREATE_TABLE_AUTHOR);
-        db.execSQL(CREATE_TABLE_CONTRIBUTOR);
-        db.execSQL(CREATE_TABLE_CITATIONAUTHOR);
-        db.execSQL(CREATE_TABLE_CITATIONCONTRIBUTOR);
-        db.execSQL(CREATE_TABLE_PROJECTCITATION);
+    public void onCreate(SQLiteDatabase db)
+    {
+        db.beginTransaction();
+        try
+        {
+            db.execSQL(CREATE_TABLE_CITATIONTYPE);
+            db.execSQL(CREATE_TABLE_PROJECT);
+            db.execSQL(CREATE_TABLE_CITATION);
+            db.execSQL(CREATE_TABLE_AUTHOR);
+            db.execSQL(CREATE_TABLE_CONTRIBUTOR);
+            db.execSQL(CREATE_TABLE_CITATIONAUTHOR);
+            db.execSQL(CREATE_TABLE_CITATIONCONTRIBUTOR);
+            db.execSQL(CREATE_TABLE_PROJECTCITATION);
+            db.setTransactionSuccessful();
+        }
+        finally
+        {
+            db.endTransaction();
+        }
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROJECTCITATION );
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITATIONCONTRIBUTOR );
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITATIONAUTHOR );
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTRIBUTOR );
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_AUTHOR );
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITATION );
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROJECT );
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_CITATIONTYPE);
-        onCreate(db);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    {
+        db.beginTransaction();
+        try{
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROJECTCITATION );
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITATIONCONTRIBUTOR );
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITATIONAUTHOR );
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTRIBUTOR );
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_AUTHOR );
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CITATION );
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROJECT );
+            db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_CITATIONTYPE);
+            db.setTransactionSuccessful();
+            onCreate(db);
+        }
+        finally
+        {
+            db.endTransaction();
+        }
     }
 
     private boolean insertType(String typeName)
