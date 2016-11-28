@@ -80,7 +80,7 @@ public class CitationView extends AppCompatActivity {
 
         // add to project
 
-        
+
 
 //        TextView text = (TextView)findViewById(R.id.clickeditem);
 //        text.setText(String.format("Selected for item %s", listItemName));

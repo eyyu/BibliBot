@@ -444,7 +444,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public void insertCitationProject(String citationTitle , String projectName)
     {
         int citId = getCitationID(citationTitle);
-        int proId = getCitationID(projectName);
+        int proId = getProjectID(projectName);
         insertCitationProject(citId, proId);
     }
 

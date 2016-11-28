@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +61,22 @@ public class CitationActivity extends AppCompatActivity {
 
     public void generate(final View view) {
         Intent export = new Intent(getApplicationContext(), Export.class);
+
+        Spinner citationStyle = (Spinner) findViewById(R.id.citationStyle);
+        int style = citationStyle.getSelectedItemPosition();
+        switch(style){
+            case 0:
+                // MLA
+                break;
+            case 1:
+                // APA
+                break;
+            case 2:
+                // Chicago
+                break;
+            default:
+                break;
+        }
         startActivity(export);
     }
 
