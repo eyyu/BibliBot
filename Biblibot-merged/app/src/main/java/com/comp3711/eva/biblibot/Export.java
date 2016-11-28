@@ -20,6 +20,10 @@ import java.net.URL;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_NEUTRAL;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
 public class Export extends AppCompatActivity {
 
     @Override
@@ -38,38 +42,22 @@ public class Export extends AppCompatActivity {
         feedTask.setISBN(isbn);
         feedTask.execute();
 
-//        TextView tx = (TextView) findViewById(R.id.citation_details);
-//        tx.setText(scanned);
+        TextView resultText = (TextView) findViewById(R.id.citation_details);
+        final String citationDetails = (String) resultText.getText();
 
+        // Function for export
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CharSequence exportOptions[] = new CharSequence[] {"EMail", "Save as file", "Bluetooth"};
-
-                builder.setTitle("Share Bibliography via");
-
-                builder.setItems(exportOptions, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // the user clicked on colors[which]
-                    }
-                });
-                builder.show();
-                }
-        });
-
-/*        CharSequence exportOptions[] = new CharSequence[] {"EMail", "Save as file", "Bluetooth"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Share Bibliography via");
-        builder.setItems(exportOptions, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // the user clicked on colors[which]
+                Intent email = new Intent(Intent.ACTION_SEND);
+                email.putExtra(Intent.EXTRA_EMAIL, new String[]{ "to"});
+                email.putExtra(Intent.EXTRA_SUBJECT, "Bibliography from Biblibot");
+                email.putExtra(Intent.EXTRA_TEXT, citationDetails);
+                email.setType("message/rfc822");
+                startActivity(Intent.createChooser(email, "Share Bibliography via: "));
             }
         });
-        builder.show();
-        */
+
     }
 
     private class RetrieveFeedTask extends AsyncTask<Void, Void, String> {
@@ -125,6 +113,7 @@ public class Export extends AppCompatActivity {
             return results;
         }
 
+        // Outputs scanned result to TextView
         @Override
         protected void onPostExecute(String r) {
             TextView resultText = (TextView) findViewById(R.id.citation_details);
