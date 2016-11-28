@@ -30,7 +30,8 @@
             android:label="Barcode Scanner" />
         <activity android:name=".ProjectView" />
         <activity android:name=".LoginPage" />
-        <activity android:name=".CitationView"></activity>
+        <activity android:name=".CitationView" />
+        <activity android:name=".CitationDetail"></activity>
     </application>
 
 </manifest>

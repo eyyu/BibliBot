@@ -33,4 +33,6 @@
     <string name="title_activity_landing">LandingActivity</string>
     <string name="dummy_button">Login</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="add_to_project">Add to Project: </string>
 </resources>
