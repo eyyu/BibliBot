@@ -320,6 +320,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         {
             return false;
         }
+
         db.close();
         return true;
     }
@@ -504,8 +505,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         ArrayList<String> projNamesList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT * "  + KEY_NAME +
-                " FROM " + TABLE_PROJECT ;
+        String selectQuery = "SELECT * FROM " + TABLE_PROJECT ;
 
         Log.e("SQL QUERY", selectQuery);
 
@@ -555,6 +555,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         Citation c;
         for (int i = 0; i < 5 ; i++ ) {
             c = new Citation();
+            c.setType("BOOK");
             c.setContainer("testContainer1" + i);
             c.setTitle("testTitle1" + i);
             c.setSubtitle("testSubtitle1" + i);
