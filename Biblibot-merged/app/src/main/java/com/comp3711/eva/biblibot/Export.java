@@ -19,12 +19,11 @@ import java.net.URL;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
-import static android.content.DialogInterface.BUTTON_NEGATIVE;
-import static android.content.DialogInterface.BUTTON_NEUTRAL;
-import static android.content.DialogInterface.BUTTON_POSITIVE;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Export extends AppCompatActivity {
+    private final String TAG = Export.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +60,15 @@ public class Export extends AppCompatActivity {
     }
 
     private class RetrieveFeedTask extends AsyncTask<Void, Void, String> {
-        private String ISBN;
-        private String results;
+        private String     ISBN;
+        private String     results;
+        private JSONObject jsonData;
 
         public String getResults() {
             return results;
+        }
+        public JSONObject getJsonData() {
+            return jsonData;
         }
 
         public void setISBN(String isbn) {
@@ -100,6 +103,7 @@ public class Export extends AppCompatActivity {
                         }
                         bufferedReader.close();
                         results = stringBuilder.toString();
+                        jsonData = getJSON(results);
                         return results;
                     } finally {
                         urlConnection.disconnect();
@@ -114,6 +118,18 @@ public class Export extends AppCompatActivity {
         }
 
         // Outputs scanned result to TextView
+        private JSONObject getJSON(String jsonResult) {
+            JSONObject result;
+            try {
+                result = new JSONObject(jsonResult);
+            } catch (JSONException ex) {
+                Log.e(TAG, "Error parsing string " + ex);
+                result = null;
+            }
+
+            return result;
+        }
+
         @Override
         protected void onPostExecute(String r) {
             TextView resultText = (TextView) findViewById(R.id.citation_details);
