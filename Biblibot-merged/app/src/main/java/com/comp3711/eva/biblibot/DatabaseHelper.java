@@ -75,6 +75,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static final String KEY_ACCESSDAY   = "ACCESSDAY";
     private static final String KEY_ACCESSMONTH = "ACCESSMONTH";
 
+    private static final String DEFAULT_PROJECT = "ALL";
+
     private static boolean hasValues = false;
 
 
@@ -260,6 +262,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         return true;
     }
 
+
     private boolean insertCitationProject(int citId, int proId){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -352,10 +355,53 @@ public class DatabaseHelper extends SQLiteOpenHelper
         {
             return false;
         }
-
         db.close();
+        insertCitationProject(c.getTitle(), DEFAULT_PROJECT);
         return true;
     }
+
+    private int getCitationID(String citationName)
+    {
+        int id;
+        final SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + KEY_ID + " FROM " + TABLE_CITATION + " WHERE "
+                + KEY_NAME + " = '" + citationName + "'";
+
+        Log.e("SQL QUERY", selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+        {
+            c.moveToFirst();
+        }
+
+        id = c.getInt(c.getColumnIndex(KEY_ID));
+        return id;
+    }
+
+    private int getProjectID(String projectName)
+    {
+        int id;
+        final SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + KEY_ID + " FROM " + TABLE_PROJECT + " WHERE "
+                + KEY_NAME + " = '" + projectName + "'";
+
+        Log.e("SQL QUERY", selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+        {
+            c.moveToFirst();
+        }
+
+        id = c.getInt(c.getColumnIndex(KEY_ID));
+        return id;
+    }
+
     private int getCitationTypeId(String Type)
     {
         int typeId;
@@ -392,6 +438,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
         Citation []list = new Citation[citations.size()];
         list = citations.toArray(list);
         return list;
+    }
+
+    public void insertCitationProject(String citationTitle , String projectName)
+    {
+        int citId = getCitationID(citationTitle);
+        int proId = getCitationID(projectName);
+        insertCitationProject(citId, proId);
     }
 
     public Citation getCitationByTitle(String citationTitle) {
@@ -441,9 +494,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         citation.setAccessDay( (c.getInt(c.getColumnIndex(KEY_ACCESSDAY))));
         citation.setAccessMonth( (c.getInt(c.getColumnIndex(KEY_ACCESSMONTH))));
 
-
         db.close();
-
         return citation;
 
     }
@@ -453,8 +504,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         ArrayList<String> projNamesList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT * DISTINCT "  +
-                KEY_NAME +
+        String selectQuery = "SELECT * "  + KEY_NAME +
                 " FROM " + TABLE_PROJECT ;
 
         Log.e("SQL QUERY", selectQuery);
@@ -489,6 +539,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         db.close();
         createTypeVals();
+        insertDefaultProject();
         insertFillerCiations();
     }
 
@@ -521,7 +572,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
             c.setAccessYear(2000 + i);
             c.setAccessDay( i);
             c.setAccessMonth(10 + i);
+
+            insertCitation(c);
         }
     }
 
+    private void insertDefaultProject()
+    {
+        insertProject(DEFAULT_PROJECT);
+    }
 }
