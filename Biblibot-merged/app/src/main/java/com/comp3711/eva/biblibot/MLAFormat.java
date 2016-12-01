@@ -20,14 +20,14 @@ public class MLAFormat implements  Formatable {
             citation = lName[0] + ", " + fName[0] + ". ";
 
         } else if (fName.length == 2) {
-            citation = lName[0] + ", " + fName[0] + ", and " + fName[1] + " " + lName[1];
+            citation = lName[0] + ", " + fName[0] + ", and " + fName[1] + " " + lName[1] + ". ";
 
         } else {
             citation = lName[0] + ", " + fName[0] + ", et al. ";
 
         }
 
-        citation += title     + ". ";  //italicize???
+        citation += "<i>" + title + "</i>" + ". ";  //italicize???
         citation += publisher + ", ";
         citation += date      + ".";
 
