@@ -17,8 +17,8 @@ import java.util.ArrayList;
 public class CitationView extends AppCompatActivity {
     private String projectName;
     private String[] citations;
-    private DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
-    private final String[] projectList = databaseHelper.getAllProjects();
+    private DatabaseHelper databaseHelper;
+    private String[] projectList = {};
 //    private final String[] projectList = {"project 1", "project 2", "project 3"};
 
     @Override
@@ -28,6 +28,9 @@ public class CitationView extends AppCompatActivity {
 
         ListView lv = (ListView) findViewById(R.id.list_view);
         registerForContextMenu(lv);
+
+        databaseHelper = new DatabaseHelper(getApplicationContext());
+        projectList = databaseHelper.getAllProjects();
 
         Intent citationView = getIntent();
         projectName = citationView.getStringExtra("project");
