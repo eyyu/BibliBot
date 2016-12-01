@@ -458,9 +458,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         " C JOIN "  + TABLE_PROJECTCITATION +
                         " PC ON C." + KEY_ID + " = PC." + KEY_CITATIONID +
                         " WHERE PC."  + KEY_PROJECTID +
-                        "= (" +
-                            "SELECT"  + KEY_ID   + " FROM " + TABLE_PROJECT +
-                            " WHERE " + KEY_NAME + "= '" + projectName + "');";
+                        " = (" +
+                            "SELECT "  + KEY_ID   + " FROM " + TABLE_PROJECT +
+                            " WHERE " + KEY_NAME + " = '" + projectName + "');";
 
         Log.e("SQL QUERY", selectQuery);
 
