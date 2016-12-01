@@ -502,11 +502,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
         int typeId = c.getInt(c.getColumnIndex(KEY_TYPEID));
         String Type;
-        if (  typeId == 0 )
+        if (  typeId == 1 )
         {
             Type = "BOOK";
         }
-        else if (typeId == 1) {
+        else if (typeId == 2) {
             Type = "PERIODICAL";
         }
         else {

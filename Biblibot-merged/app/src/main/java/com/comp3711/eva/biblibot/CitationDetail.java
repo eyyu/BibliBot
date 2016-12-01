@@ -7,13 +7,15 @@ import android.widget.TextView;
 
 public class CitationDetail extends AppCompatActivity {
     private String citationTitle;
-    private DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+    private DatabaseHelper databaseHelper;
     private Citation citation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citation_detail);
+
+        databaseHelper = new DatabaseHelper(getApplicationContext());
 
         Intent citationDetail = getIntent();
         citationTitle = citationDetail.getStringExtra("citation");
