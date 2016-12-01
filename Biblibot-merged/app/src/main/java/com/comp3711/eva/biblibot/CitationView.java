@@ -17,8 +17,10 @@ import java.util.ArrayList;
 public class CitationView extends AppCompatActivity {
     private String projectName;
     private String[] citations;
+    private String citationToAdd;
     private DatabaseHelper databaseHelper;
     private String[] projectList = {};
+    private final ArrayList<String> citationNameList = new ArrayList<>();
 //    private final String[] projectList = {"project 1", "project 2", "project 3"};
 
     @Override
@@ -37,7 +39,6 @@ public class CitationView extends AppCompatActivity {
         citations = null;
         citations = databaseHelper.getCitationsByProjectName(projectName);
 
-        final ArrayList<String> citationNameList = new ArrayList<>();
         for(String c : citations){
             citationNameList.add(c);
         }
@@ -58,13 +59,14 @@ public class CitationView extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            citationToAdd = citationNameList.get(info.position);
+
             menu.setHeaderTitle(R.string.add_to_project);
             String[] menuItems = projectList;
             for (int i = 0; i<menuItems.length; i++) {
@@ -76,14 +78,13 @@ public class CitationView extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         // get the info of the list clicked on
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-        // get the id of current menu item clicked
-        int menuItemIndex = item.getItemId();
 
         // project name that was clicked on
-        String listItemName = projectList[info.position];
+        String projectName = item.toString();
 
         // add to project
-
+        databaseHelper = new DatabaseHelper(getApplicationContext());
+        databaseHelper.insertCitationProject(citationToAdd, projectName);
 
 
 //        TextView text = (TextView)findViewById(R.id.clickeditem);

@@ -3,6 +3,7 @@ package com.comp3711.eva.biblibot;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.database.DatabaseUtilsCompat;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +61,17 @@ public class ProjectView extends Activity {
                 startActivity(i);
             }
         });
+    }
+
+    public void addNewProject(View view){
+        EditText newProjectName = (EditText) findViewById(R.id.newProjectName);
+        String newProjName = newProjectName.getText().toString();
+
+        databaseHelper = new DatabaseHelper(getApplicationContext());
+        databaseHelper.insertProject(newProjName);
+
+        finish();
+        startActivity(getIntent());
     }
 
 }

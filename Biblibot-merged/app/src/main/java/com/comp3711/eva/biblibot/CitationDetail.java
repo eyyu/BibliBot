@@ -25,7 +25,7 @@ public class CitationDetail extends AppCompatActivity {
 
         // Display citation
         TextView tv = (TextView) findViewById(R.id.citation_detail);
-        tv.setText("Citation details");
+        tv.setText(citation.getTitle());
 
     }
 }
