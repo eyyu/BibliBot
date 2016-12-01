@@ -69,6 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static final String KEY_DOI         = "DOI";
     private static final String KEY_LOCATION    = "LOCATION";
     private static final String KEY_PUBLISHER   = "PUBLISHER";
+    private static final String KEY_PUBDATE     = "PUBDATE";
     private static final String KEY_PUBYEAR     = "PUBYEAR";
     private static final String KEY_PUBDAY      = "PUBDAY";
     private static final String KEY_PUBMONTH    = "PUBMONTH";
@@ -109,6 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     KEY_DOI           + " TEXT, " +
                     KEY_LOCATION      + " TEXT, " +
                     KEY_PUBLISHER     + " TEXT, " +
+                    KEY_PUBDATE       + " TEXT, " +
                     KEY_PUBYEAR       + " INTEGER, " +
                     KEY_PUBDAY        + " INTEGER, " +
                     KEY_PUBMONTH      + " INTEGER, " +
@@ -358,6 +360,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             cv.put ( KEY_LOCATION     , c.getLocation());
         if(c.getPublisher() != null)
             cv.put ( KEY_PUBLISHER    , c.getPublisher());
+        if(c.getPubDate() != null)
+            cv.put ( KEY_PUBDATE      , c.getPubDate());
         if(c.getPubYear() > 0)
             cv.put ( KEY_PUBYEAR      , c.getPubYear());
         if(c.getPubDay() > 0)
