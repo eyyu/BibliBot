@@ -132,8 +132,8 @@ public class Export extends AppCompatActivity {
             return result;
         }
 
-        private String createCitation(JSONObject data, String format) {
-
+        private Citation createCitation(JSONObject data, String format) {
+            Citation citation = new Citation();
 
             String[] citAuthors = null;
             String title        = null;
@@ -191,7 +191,14 @@ public class Export extends AppCompatActivity {
                     last[i] = tmp[tmp.length - 1];
                 }
 
-                return MLAFormat.bookFormat(first, last, title, publisher, date);
+                citation.setfName(first);
+                citation.setlName(last);
+                citation.setTitle(title);
+                citation.setPublisher(publisher);
+                citation.setPubDate(date);
+
+                return citation;
+                //return MLAFormat.bookFormat(first, last, title, publisher, date);
             } catch (Exception e) {
                 Log.e(TAG, "createCitation: error parsing JSONObject ", e);
             }
@@ -201,9 +208,17 @@ public class Export extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String r) {
+            String citation;
+            Citation cite;
+
+            cite = createCitation(jsonData, "MLA");
+            citation = MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
+                                            cite.getTitle(), cite.getPublisher(),
+                                            cite.getPubDate());
+
             TextView resultText = (TextView) findViewById(R.id.citation_details);
             if (createCitation(jsonData, "MLA") != null)
-                resultText.setText(Html.fromHtml(createCitation(jsonData, "MLA")));
+                resultText.setText(Html.fromHtml(citation));
             else
                 resultText.setText("ERROR: Book data could not be found");
         }
