@@ -35,7 +35,7 @@ public class ProjectView extends Activity {
             Toast.makeText(this, "database failed", Toast.LENGTH_LONG).show();
         }
 
-        databaseHelper.checkIsSet();
+        //databaseHelper.checkIsSet();
 
         ListView lv = (ListView) findViewById(R.id.list_view);
 

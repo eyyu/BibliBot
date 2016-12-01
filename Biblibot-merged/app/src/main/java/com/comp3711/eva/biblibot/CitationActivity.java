@@ -21,8 +21,8 @@ public class CitationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citation);
 
-//        dbHelper = new DatabaseHelper(getApplicationContext());
-//        dbHelper.checkIsSet();
+        dbHelper = new DatabaseHelper(getApplicationContext());
+        dbHelper.checkIsSet();
     }
 
     public void scan(final View view) {

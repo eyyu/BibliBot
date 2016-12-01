@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class CitationView extends AppCompatActivity {
     private String projectName;
-    private Citation[] citations;
+    private String[] citations;
     private DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
     private final String[] projectList = databaseHelper.getAllProjects();
 //    private final String[] projectList = {"project 1", "project 2", "project 3"};
@@ -31,11 +31,12 @@ public class CitationView extends AppCompatActivity {
 
         Intent citationView = getIntent();
         projectName = citationView.getStringExtra("project");
+        citations = null;
         citations = databaseHelper.getCitationsByProjectName(projectName);
 
         final ArrayList<String> citationNameList = new ArrayList<>();
-        for(Citation c : citations){
-            citationNameList.add(c.getTitle());
+        for(String c : citations){
+            citationNameList.add(c);
         }
 
         // Binding resources Array to ListAdapter
