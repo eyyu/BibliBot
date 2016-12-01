@@ -122,7 +122,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             "CREATE TABLE IF NOT EXISTS " + TABLE_AUTHOR + " (" +
                     KEY_ID      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     KEY_FNAME   + " TEXT, " +
-                    KEY_LNAME   + " TEXT"   +
+                    KEY_LNAME   + " TEXT,"   +
+                    KEY_CITATIONID   + " INTEGER"   +
                     ")";
 
     private static final String CREATE_TABLE_CONTRIBUTOR =
@@ -277,12 +278,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
         return true;
     }
 
-    public boolean insertAuthor(String fName, String lName )
+    public boolean insertAuthor(String fName, String lName, int citationID )
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put ( KEY_FNAME , fName );
-        cv.put ( KEY_LNAME , lName );
+        cv.put ( KEY_FNAME      , fName );
+        cv.put ( KEY_LNAME      , lName );
+        cv.put ( KEY_CITATIONID , citationID );
 
         if  ( db.insert(TABLE_AUTHOR, null, cv) < 0 )
         {
@@ -325,7 +327,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         return true;
     }
 
-    public boolean insertCitation(Citation c) //,
+    public boolean insertCitation(Citation c, String [] authorfNames , String []authorlNames) //,
                                   //Author [] authors,
                                   //Contributor [] contribs )
     {
@@ -334,7 +336,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
         int typeId = getCitationTypeId(c.getType());
         cv.put ( KEY_TYPEID       , typeId );
         SQLiteDatabase db = this.getWritableDatabase();
-
         if(c.getContainer() != null)
             cv.put ( KEY_CONTAINTER   , c.getContainer() );
         if(c.getTitle() != null)
@@ -377,6 +378,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
             return false;
         }
         db.close();
+        int citId = getCitationID(c.getTitle());
+        for (int i = 0; i < authorlNames.length; ++i)
+        {
+            insertAuthor(authorfNames[i], authorlNames[i], citId);
+        }
+
         insertCitationProject(c.getTitle(), DEFAULT_PROJECT);
         return true;
     }
@@ -591,7 +598,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private void insertFillerCiations()
     {
         Citation c = new Citation();
+        String [] fNames ;
+        String [] lNames ;
         for (int i = 0; i < 5 ; i++ ) {
+            fNames = new String[]{"authFname"+i};
+            lNames = new String[]{"authlname"+i};
             c.setType("BOOK");
             c.setContainer("testContainer1" + i);
             c.setTitle("testTitle1" + i);
@@ -611,7 +622,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             c.setAccessDay( i);
             c.setAccessMonth(10 + i);
 
-            insertCitation(c);
+            insertCitation(c, fNames, lNames);
         }
     }
 
