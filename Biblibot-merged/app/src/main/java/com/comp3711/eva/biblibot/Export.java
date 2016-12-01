@@ -210,16 +210,15 @@ public class Export extends AppCompatActivity {
         protected void onPostExecute(String r) {
             String citation;
             Citation cite;
+            TextView resultText = (TextView) findViewById(R.id.citation_details);
 
             cite = createCitation(jsonData, "MLA");
-            citation = MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
-                                            cite.getTitle(), cite.getPublisher(),
-                                            cite.getPubDate());
-
-            TextView resultText = (TextView) findViewById(R.id.citation_details);
-            if (createCitation(jsonData, "MLA") != null)
+            if (cite != null) {
+                citation = MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
+                        cite.getTitle(), cite.getPublisher(),
+                        cite.getPubDate());
                 resultText.setText(Html.fromHtml(citation));
-            else
+            } else
                 resultText.setText("ERROR: Book data could not be found");
         }
     }
