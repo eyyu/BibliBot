@@ -21,6 +21,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static android.content.ContentValues.TAG;
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 /**
@@ -75,6 +76,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static final String KEY_ACCESSDAY   = "ACCESSDAY";
     private static final String KEY_ACCESSMONTH = "ACCESSMONTH";
 
+    private static final String DEFAULT_PROJECT = "ALL";
+
     private static boolean hasValues = false;
 
 
@@ -111,9 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     KEY_PUBMONTH      + " INTEGER, " +
                     KEY_ACCESSYEAR    + " INTEGER, " +
                     KEY_ACCESSDAY     + " INTEGER, " +
-                    KEY_ACCESSMONTH   + " INTEGER, "   +
-                    "FOREIGN KEY (" + KEY_TYPEID + ") REFERENCES "
-                        + TABLE_CITATIONTYPE + "(" + KEY_ID + ")"+
+                    KEY_ACCESSMONTH   + " INTEGER "   +
         ")";
 
 
@@ -180,6 +181,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             db.execSQL(CREATE_TABLE_CITATIONTYPE);
             db.execSQL(CREATE_TABLE_PROJECT);
             db.execSQL(CREATE_TABLE_CITATION);
+            Log.e(TAG, "onCreate Table Citation: " + CREATE_TABLE_CITATION);
             db.execSQL(CREATE_TABLE_AUTHOR);
             db.execSQL(CREATE_TABLE_CONTRIBUTOR);
             db.execSQL(CREATE_TABLE_CITATIONAUTHOR);
@@ -260,6 +262,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         return true;
     }
 
+
     private boolean insertCitationProject(int citId, int proId){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -317,6 +320,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         {
             return false;
         }
+
         db.close();
         return true;
     }
@@ -325,37 +329,104 @@ public class DatabaseHelper extends SQLiteOpenHelper
                                   //Author [] authors,
                                   //Contributor [] contribs )
     {
-        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         int typeId = getCitationTypeId(c.getType());
         cv.put ( KEY_TYPEID       , typeId );
-        cv.put ( KEY_CONTAINTER   , c.getContainer() );
-        cv.put ( KEY_TITLE        , c.getTitle() );
-        cv.put ( KEY_SUBTITLE     , c.getSubtitle());
-        cv.put ( KEY_VOLUME       , c.getVolume());
-        cv.put ( KEY_VERSION      , c.getVersion());
-        cv.put ( KEY_ISSUE        , c.getIssue());
-        cv.put ( KEY_PAGES        , c.getPages());
-        cv.put ( KEY_URL          , c.getUrl());
-        cv.put ( KEY_DOI          , c.getDoi());
-        cv.put ( KEY_LOCATION     , c.getLocation());
-        cv.put ( KEY_PUBLISHER    , c.getPublisher());
-        cv.put ( KEY_PUBYEAR      , c.getPubYear());
-        cv.put ( KEY_PUBDAY       , c.getPubDay());
-        cv.put ( KEY_PUBMONTH     , c.getPubMonth());
-        cv.put ( KEY_ACCESSYEAR   , c.getAccessYear());
-        cv.put ( KEY_ACCESSDAY    , c.getAccessDay());
-        cv.put ( KEY_ACCESSMONTH  , c.getAccessMonth());
+        SQLiteDatabase db = this.getWritableDatabase();
 
-        if  ( db.insert(TABLE_CITATION, null, cv) < 0 )
+        if(c.getContainer() != null)
+            cv.put ( KEY_CONTAINTER   , c.getContainer() );
+        if(c.getTitle() != null)
+            cv.put ( KEY_TITLE        , c.getTitle() );
+        if(c.getSubtitle() != null)
+            cv.put ( KEY_SUBTITLE     , c.getSubtitle());
+        if(c.getVolume() > 0)
+            cv.put ( KEY_VOLUME       , c.getVolume());
+        if(c.getVersion() > 0)
+            cv.put ( KEY_VERSION      , c.getVersion());
+        if(c.getIssue() > 0)
+            cv.put ( KEY_ISSUE        , c.getIssue());
+        if(c.getPages() != null)
+            cv.put ( KEY_PAGES        , c.getPages());
+        if(c.getUrl() != null)
+            cv.put ( KEY_URL          , c.getUrl());
+        if(c.getDoi() != null)
+            cv.put ( KEY_DOI          , c.getDoi());
+        if(c.getLocation() != null)
+            cv.put ( KEY_LOCATION     , c.getLocation());
+        if(c.getPublisher() != null)
+            cv.put ( KEY_PUBLISHER    , c.getPublisher());
+        if(c.getPubYear() > 0)
+            cv.put ( KEY_PUBYEAR      , c.getPubYear());
+        if(c.getPubDay() > 0)
+            cv.put ( KEY_PUBDAY       , c.getPubDay());
+        if(c.getPubMonth() > 0)
+            cv.put ( KEY_PUBMONTH     , c.getPubMonth());
+        if(c.getAccessYear() > 0)
+            cv.put ( KEY_ACCESSYEAR   , c.getAccessYear());
+        if(c.getAccessDay() > 0)
+            cv.put ( KEY_ACCESSDAY    , c.getAccessDay());
+        if(c.getAccessMonth() > 0)
+            cv.put ( KEY_ACCESSMONTH  , c.getAccessMonth());
+
+        long results = db.insertOrThrow(TABLE_CITATION, null, cv);
+        if  (  results  < 0 )
         {
+            db.close();
             return false;
         }
-
         db.close();
+        insertCitationProject(c.getTitle(), DEFAULT_PROJECT);
         return true;
     }
+
+    private int getCitationID(String citationName)
+    {
+        int id;
+        final SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + KEY_ID + " FROM " + TABLE_CITATION + " WHERE "
+                + KEY_TITLE + "='" + citationName + "'";
+
+        Log.e("SQL QUERY", selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+        {
+            c.moveToFirst();
+        }
+
+        id = c.getInt(c.getColumnIndex(KEY_ID));
+        c.close();
+        db.close();
+        return id;
+    }
+
+    private int getProjectID(String projectName)
+    {
+        int id;
+        final SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT " + KEY_ID + " FROM " + TABLE_PROJECT + " WHERE "
+                + KEY_NAME + " ='" + projectName + "'";
+
+        Log.e("SQL QUERY", selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+        {
+            c.moveToFirst();
+        }
+
+        id = c.getInt(c.getColumnIndex(KEY_ID));
+        c.close();
+        db.close();
+        return id;
+    }
+
     private int getCitationTypeId(String Type)
     {
         int typeId;
@@ -373,25 +444,45 @@ public class DatabaseHelper extends SQLiteOpenHelper
             c.moveToFirst();
         }
         typeId = c.getInt(c.getColumnIndex(KEY_ID));
+        c.close();
+        db.close();
         return typeId;
     }
 
-    public Citation[] getCitationsByProjectName(final String projectName)
+    public String[] getCitationsByProjectName(final String projectName)
     {
         final SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList <Citation> citations = new ArrayList();
+        ArrayList <String> citations = new ArrayList();
         String selectQuery =
                 "SELECT * FROM " + TABLE_CITATION +
                         " C JOIN "  + TABLE_PROJECTCITATION +
                         " PC ON C." + KEY_ID + " = PC." + KEY_CITATIONID +
                         " WHERE PC."  + KEY_PROJECTID +
-                        "= (" +
-                            "SELECT"  + KEY_ID   + " FROM " + TABLE_PROJECT +
-                            " WHERE " + KEY_NAME + "= '" + projectName + "');";
+                        " = (" +
+                            "SELECT "  + KEY_ID   + " FROM " + TABLE_PROJECT +
+                            " WHERE " + KEY_NAME + " = '" + projectName + "');";
 
-        Citation []list = new Citation[citations.size()];
+        Log.e("SQL QUERY", selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c.moveToFirst()) {
+            do {
+                String cTitle = c.getString(c.getColumnIndex(KEY_TITLE));
+                citations.add(cTitle);
+            } while (c.moveToNext());
+        }
+        String [] list = new String[citations.size()];
         list = citations.toArray(list);
+        db.close();
         return list;
+    }
+
+    public void insertCitationProject(String citationTitle , String projectName)
+    {
+        int citId = getCitationID(citationTitle);
+        int proId = getProjectID(projectName);
+        insertCitationProject(citId, proId);
     }
 
     public Citation getCitationByTitle(String citationTitle) {
@@ -411,11 +502,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
         int typeId = c.getInt(c.getColumnIndex(KEY_TYPEID));
         String Type;
-        if (  typeId == 0 )
+        if (  typeId == 1 )
         {
             Type = "BOOK";
         }
-        else if (typeId == 1) {
+        else if (typeId == 2) {
             Type = "PERIODICAL";
         }
         else {
@@ -441,9 +532,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         citation.setAccessDay( (c.getInt(c.getColumnIndex(KEY_ACCESSDAY))));
         citation.setAccessMonth( (c.getInt(c.getColumnIndex(KEY_ACCESSMONTH))));
 
-
         db.close();
-
         return citation;
 
     }
@@ -453,9 +542,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         ArrayList<String> projNamesList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT * DISTINCT "  +
-                KEY_NAME +
-                " FROM " + TABLE_PROJECT ;
+        String selectQuery = "SELECT * FROM " + TABLE_PROJECT ;
 
         Log.e("SQL QUERY", selectQuery);
 
@@ -467,6 +554,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                 projNamesList.add(pName);
             } while (c.moveToNext());
         }
+        c.close();
         db.close();
         String []list = new String[projNamesList.size()];
         list = projNamesList.toArray(list);
@@ -489,6 +577,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         db.close();
         createTypeVals();
+        insertDefaultProject();
         insertFillerCiations();
     }
 
@@ -501,9 +590,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     private void insertFillerCiations()
     {
-        Citation c;
+        Citation c = new Citation();
         for (int i = 0; i < 5 ; i++ ) {
-            c = new Citation();
+            c.setType("BOOK");
             c.setContainer("testContainer1" + i);
             c.setTitle("testTitle1" + i);
             c.setSubtitle("testSubtitle1" + i);
@@ -521,7 +610,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
             c.setAccessYear(2000 + i);
             c.setAccessDay( i);
             c.setAccessMonth(10 + i);
+
+            insertCitation(c);
         }
     }
 
+    private void insertDefaultProject()
+    {
+        insertProject(DEFAULT_PROJECT);
+    }
 }
