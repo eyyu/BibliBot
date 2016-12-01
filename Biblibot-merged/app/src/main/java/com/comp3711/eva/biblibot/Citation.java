@@ -31,7 +31,7 @@ public class Citation {
     private int       accessYear;
     private int       accessMonth;
     private int       accessDay;
-
+    private String    pubDate;
     private int      AccessDate;
 
     public String [] getfName() {
@@ -241,5 +241,13 @@ public class Citation {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(String pubDate) {
+        this.pubDate = pubDate;
     }
 }
