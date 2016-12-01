@@ -20,12 +20,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectView extends Activity {
 
     private DatabaseHelper databaseHelper;
+    private String projToExport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class ProjectView extends Activity {
         //databaseHelper.checkIsSet();
 
         ListView lv = (ListView) findViewById(R.id.list_view);
+        registerForContextMenu(lv);
 
         final String[] projectList = databaseHelper.getAllProjects();
 //        final String[] projectList = {"project 1", "project 2"};
@@ -74,4 +77,44 @@ public class ProjectView extends Activity {
         startActivity(getIntent());
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        projToExport = info.toString();
+
+        menu.setHeaderTitle(R.string.export);
+        menu.add(Menu.NONE, 0, 0, R.string.exportProject);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        String [] allCitationTitles = {};
+        String citation = "";
+
+        // get the info of the list clicked on
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+
+        // get citation titles of the selected project
+        databaseHelper = new DatabaseHelper(getApplicationContext());
+        allCitationTitles = databaseHelper.getCitationsByProjectName(projToExport);
+
+        // concatonate citations into one string
+        for(String title : allCitationTitles){
+            Citation c = databaseHelper.getCitationByTitle(title);
+            citation.concat(MLAFormat.bookFormat(c.getfName(), c.getlName(),
+                    c.getTitle(), c.getPublisher(),
+                    c.getPubDate()));
+            citation.concat("\n");
+        }
+
+        Intent email = new Intent(Intent.ACTION_SEND);
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{ "to"});
+        email.putExtra(Intent.EXTRA_SUBJECT, "Bibliography from Biblibot");
+        email.putExtra(Intent.EXTRA_TEXT, citation);
+        email.setType("message/rfc822");
+        startActivity(Intent.createChooser(email, "Share Bibliography via: "));
+
+        return true;
+    }
 }

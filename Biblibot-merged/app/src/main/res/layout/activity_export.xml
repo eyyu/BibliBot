@@ -116,8 +116,8 @@
             android:scrollbars="vertical"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_above="@+id/button7"
-            android:layout_alignParentTop="true">
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/spinner7">
 
             <TextView
                 android:layout_width="match_parent"
