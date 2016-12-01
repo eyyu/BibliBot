@@ -5,48 +5,48 @@ package com.comp3711.eva.biblibot;
  */
 
 public class Citation {
-    private String   fName;
-    private String   lName;
-    private String   type;
-    private char     initial;
-    private String   title;
-    private String   publisher;
-    private int   volume;
-    private int   issue;
-    private String   container;
-    private double   version;
-    private String   location;
-    private String[] contributors;
-    private String[] authors;
-    private String   accessDate;
-    private String   subtitle;
-    private String   artTitle;
-    private String   perTitle;
-    private String   url;
-    private String   doi;
-    private String      pages;
-    private int      pubYear;
-    private int      pubMonth;
-    private int      pubDay;
-    private int      accessYear;
-    private int      accessMonth;
-    private int      accessDay;
-
+    private String [] fName;
+    private String [] lName;
+    private String    type;
+    private char      initial;
+    private String    title;
+    private String    publisher;
+    private int       volume;
+    private int       issue;
+    private String    container;
+    private double    version;
+    private String    location;
+    private String[]  contributors;
+    private String[]  authors;
+    private String    accessDate;
+    private String    subtitle;
+    private String    artTitle;
+    private String    perTitle;
+    private String    url;
+    private String    doi;
+    private String    pages;
+    private int       pubYear;
+    private int       pubMonth;
+    private int       pubDay;
+    private int       accessYear;
+    private int       accessMonth;
+    private int       accessDay;
+    private String    pubDate;
     private int      AccessDate;
 
-    public String getfName() {
+    public String [] getfName() {
         return fName;
     }
 
-    public void setfName(String fName) {
+    public void setfName(String [] fName) {
         this.fName = fName;
     }
 
-    public String getlName() {
+    public String [] getlName() {
         return lName;
     }
 
-    public void setlName(String lName) {
+    public void setlName(String [] lName) {
         this.lName = lName;
     }
 
@@ -241,5 +241,13 @@ public class Citation {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(String pubDate) {
+        this.pubDate = pubDate;
     }
 }

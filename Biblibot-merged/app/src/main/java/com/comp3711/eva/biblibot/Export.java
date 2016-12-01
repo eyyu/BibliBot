@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import java.net.URL;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -130,10 +132,80 @@ public class Export extends AppCompatActivity {
             return result;
         }
 
+        private String createCitation(JSONObject data, String format) {
+
+
+            String[] citAuthors = null;
+            String title        = null;
+            String publisher    = null;
+            String date         = null;
+
+            try
+            {
+                //JSONArray authors = data.getJSONArray("authors");
+                JSONArray items = data.getJSONArray("items");
+                JSONObject obj = items.optJSONObject(0);
+                JSONObject volumeInfo = obj.getJSONObject("volumeInfo");
+
+                JSONArray authors = volumeInfo.getJSONArray("authors");
+                citAuthors = new String[authors.length()];
+                for (int j = 0; j < authors.length(); j++)
+                {
+                    citAuthors[j] = authors.getString(j);
+                }
+
+                title = volumeInfo.getString("title");
+                publisher = volumeInfo.getString("publisher");
+                date = volumeInfo.getString("publishedDate");
+                /*for (int i = 0; i < items.length(); i++) {
+                    JSONObject obj = items.optJSONObject(i);
+
+                    if (obj.has("authors")) {
+                        JSONArray authors = data.getJSONArray("authors");
+                        citAuthors = new String[authors.length()];
+                        for (int j = 0; i < authors.length(); i++)
+                        {
+                            citAuthors[i] = authors.getString(i);
+                        }
+                    }
+                    if (obj.has("title")) {
+                        title = obj.getString("title");
+                    }
+                    if (obj.has("publisher")) {
+                        publisher = obj.getString("publisher");
+                    }
+                    if (obj.has("publishedDate")) {
+                        date = obj.getString("publishedDate");
+                    }
+                }*/
+
+
+                //for (int i = 0; i < )
+                String[] tmp;// = new String[citAuthors.length];//citAuthors[0].split(" ");
+                String[] first = new String[citAuthors.length];
+                String[] last = new String[citAuthors.length];
+
+                for (int i = 0; i < citAuthors.length; i++) {
+                    tmp = citAuthors[i].split(" ");
+                    first[i] = tmp[0];
+                    last[i] = tmp[tmp.length - 1];
+                }
+
+                return MLAFormat.bookFormat(first, last, title, publisher, date);
+            } catch (Exception e) {
+                Log.e(TAG, "createCitation: error parsing JSONObject ", e);
+            }
+
+            return null;
+        }
+
         @Override
         protected void onPostExecute(String r) {
             TextView resultText = (TextView) findViewById(R.id.citation_details);
-            resultText.setText(results);
+            if (createCitation(jsonData, "MLA") != null)
+                resultText.setText(Html.fromHtml(createCitation(jsonData, "MLA")));
+            else
+                resultText.setText("ERROR: Book data could not be found");
         }
     }
 
