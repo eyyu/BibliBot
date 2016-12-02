@@ -75,30 +75,60 @@ public class ProjectView extends Activity {
         projToExport = projectList[info.position];
 
         menu.setHeaderTitle(R.string.export);
-        menu.add(Menu.NONE, 0, 0, R.string.exportProject);
+        menu.add(Menu.NONE, 0, 0, "Export in MLA");
+        menu.add(Menu.NONE, 1, 1, "Export in APA");
+        menu.add(Menu.NONE, 2, 2, "Export in Chicago");
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String [] allCitationTitles = {};
         String citation = "";
+        int styleSelected;
 
         // get the info of the list clicked on
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        styleSelected = item.getOrder();
 
         // get citation titles of the selected project
         databaseHelper = new DatabaseHelper(getApplicationContext());
         allCitationTitles = databaseHelper.getCitationsByProjectName(projToExport);
 
-        // concatonate citations into one string
-        for(String title : allCitationTitles){
-            Citation c = databaseHelper.getCitationByTitle(title);
-            citation += "<br>";
-            citation += (MLAFormat.bookFormat(c.getfName(), c.getlName(),
-                    c.getTitle(), c.getPublisher(),
-                    c.getPubDate()));
-            citation += "<br>";
+        switch (styleSelected){
+            case 0:
+                // concatonate citations into one string
+                for(String title : allCitationTitles){
+                    Citation c = databaseHelper.getCitationByTitle(title);
+                    citation += "<br>";
+                    citation += (MLAFormat.bookFormat(c.getfName(), c.getlName(),
+                            c.getTitle(), c.getPublisher(),
+                            c.getPubDate()));
+                    citation += "<br>";
+                }
+                break;
+            case 1:
+                // concatonate citations into one string
+                for(String title : allCitationTitles){
+                    Citation c = databaseHelper.getCitationByTitle(title);
+                    citation += "<br>";
+                    citation += (APAFormat.bookFormat(c.getlName(), c.getfName(),
+                            c.getPubYear(), c.getTitle(), c.getSubtitle(),
+                            c.getLocation(), c.getPublisher()));
+                    citation += "<br>";
+                }
+                break;
+            case 2:
+                // concatonate citations into one string
+                for(String title : allCitationTitles){
+                    Citation c = databaseHelper.getCitationByTitle(title);
+                    citation += "<br>";
+                    citation += (ChicagoFormat.bookFormat(c.getlName(), c.getfName(),
+                            c.getTitle(), c.getLocation(), c.getPublisher(), c.getPubYear()));
+                    citation += "<br>";
+                }
+                break;
         }
+
 
         // export options (with html if available)
         Intent email = new Intent(Intent.ACTION_SEND);
