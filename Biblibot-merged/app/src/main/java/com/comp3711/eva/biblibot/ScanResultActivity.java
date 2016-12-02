@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import android.os.AsyncTask;
@@ -21,9 +23,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Export extends AppCompatActivity {
-    private final String TAG = Export.class.getName();
+public class ScanResultActivity extends AppCompatActivity {
+    private final String TAG = ScanResultActivity.class.getName();
     private static String citation = "";
+    private static int style;
+    private static Citation cite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,7 @@ public class Export extends AppCompatActivity {
         final Button btn = (Button) findViewById(R.id.exportbtn);
 
         Intent export = getIntent();
+        style = export.getIntExtra("style", 0);
         String isbn = export.getStringExtra("isbn");
 
         RetrieveFeedTask feedTask = new RetrieveFeedTask();
@@ -41,6 +46,51 @@ public class Export extends AppCompatActivity {
 
 //        TextView resultText = (TextView) findViewById(R.id.result_text);
 //        final String citationDetails = (String) resultText.getText();
+
+        Spinner citationStyle = (Spinner) findViewById(R.id.citation_type);
+        citationStyle.setSelection(style);
+        citationStyle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // regenerate citation according to new style selected if necessary
+                TextView resultText = (TextView) findViewById(R.id.result_text);
+                Spinner citationStyle = (Spinner) findViewById(R.id.citation_type);
+                int styleNew = citationStyle.getSelectedItemPosition();
+                if (cite != null) {
+                    switch (styleNew){
+                        case 0:
+                            citation = "<br>";
+                            citation += MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
+                                    cite.getTitle(), cite.getPublisher(),
+                                    cite.getPubDate());
+                            citation += "<br>";
+                            break;
+                        case 1:
+                            citation = "<br>";
+                            citation += APAFormat.bookFormat(cite.getlName(), cite.getfName(),
+                                    cite.getPubYear(), cite.getTitle(), cite.getSubtitle(),
+                                    cite.getLocation(), cite.getPublisher());
+                            citation += "<br>";
+                            break;
+                        case 2:
+                            citation = "<br>";
+                            citation += ChicagoFormat.bookFormat(cite.getlName(), cite.getfName(),
+                                    cite.getTitle(), cite.getLocation(), cite.getPublisher(), cite.getPubYear());
+                            citation += "<br>";
+                            break;
+                    }
+
+                    resultText.setText(Html.fromHtml(citation));
+                } else {
+                    resultText.setText("ERROR: Book data could not be found");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
 
         // Function for export
         btn.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +105,6 @@ public class Export extends AppCompatActivity {
                 startActivity(Intent.createChooser(email, "Share Bibliography via: "));
             }
         });
-
     }
 
     // build
@@ -137,6 +186,9 @@ public class Export extends AppCompatActivity {
             String title        = null;
             String publisher    = null;
             String date         = null;
+            String year         = null;
+            String subtitle     = null;
+            String location     = null;
 
             try
             {
@@ -144,6 +196,7 @@ public class Export extends AppCompatActivity {
                 JSONArray items = data.getJSONArray("items");
                 JSONObject obj = items.optJSONObject(0);
                 JSONObject volumeInfo = obj.getJSONObject("volumeInfo");
+                JSONObject accessInfo = obj.getJSONObject("accessInfo");
 
                 JSONArray authors = volumeInfo.getJSONArray("authors");
                 citAuthors = new String[authors.length()];
@@ -155,6 +208,9 @@ public class Export extends AppCompatActivity {
                 title = volumeInfo.getString("title");
                 publisher = volumeInfo.getString("publisher");
                 date = volumeInfo.getString("publishedDate");
+                if(date != null) {year = date.substring(0,4);}
+                subtitle = volumeInfo.getString("subtitle");
+                location = accessInfo.getString("country");
                 String[] tmp;// = new String[citAuthors.length];//citAuthors[0].split(" ");
                 String[] first = new String[citAuthors.length];
                 String[] last = new String[citAuthors.length];
@@ -170,7 +226,10 @@ public class Export extends AppCompatActivity {
                 citation.setTitle(title);
                 citation.setPublisher(publisher);
                 citation.setPubDate(date);
+                citation.setPubYear(year);
                 citation.setType("BOOK");
+                citation.setSubtitle(subtitle);
+                citation.setLocation(location);
                 return citation;
 
             } catch (Exception e) {
@@ -183,16 +242,35 @@ public class Export extends AppCompatActivity {
         // set citation string to textview
         @Override
         protected void onPostExecute(String r) {
-            Citation cite;
+
             TextView resultText = (TextView) findViewById(R.id.result_text);
 
             cite = createCitation(jsonData, "MLA");
+
             if (cite != null) {
-                citation = "<br>";
-                citation += MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
-                        cite.getTitle(), cite.getPublisher(),
-                        cite.getPubDate());
-                citation += "<br>";
+                switch (style){
+                    case 0:
+                        citation = "<br>";
+                        citation += MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
+                                cite.getTitle(), cite.getPublisher(),
+                                cite.getPubDate());
+                        citation += "<br>";
+                        break;
+                    case 1:
+                        citation = "<br>";
+                        citation += APAFormat.bookFormat(cite.getlName(), cite.getfName(),
+                                cite.getPubYear(), cite.getTitle(), cite.getSubtitle(),
+                                cite.getLocation(), cite.getPublisher());
+                        citation += "<br>";
+                        break;
+                    case 2:
+                        citation = "<br>";
+                        citation += ChicagoFormat.bookFormat(cite.getlName(), cite.getfName(),
+                                cite.getTitle(), cite.getLocation(), cite.getPublisher(), cite.getPubYear());
+                        citation += "<br>";
+                        break;
+                }
+
                 resultText.setText(Html.fromHtml(citation));
                 final DatabaseHelper dbhelper = new DatabaseHelper(getApplicationContext());
                 dbhelper.insertCitation(cite, cite.getfName(), cite.getlName());
@@ -223,7 +301,10 @@ public class Export extends AppCompatActivity {
         {
             super.onActivityResult(requestCode, resultCode, data);
 
-            Intent export = new Intent(getApplicationContext(), Export.class);
+            Intent export = new Intent(getApplicationContext(), ScanResultActivity.class);
+            Spinner citationStyle = (Spinner) findViewById(R.id.citation_type);
+            int style = citationStyle.getSelectedItemPosition();
+            export.putExtra("style", style);
 
             //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
 
@@ -238,7 +319,7 @@ public class Export extends AppCompatActivity {
     }
 
     public void generate(final View view) {
-        Intent export = new Intent(getApplicationContext(), Export.class);
+        Intent export = new Intent(getApplicationContext(), ScanResultActivity.class);
         startActivity(export);
         finish();
     }

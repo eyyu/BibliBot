@@ -6,14 +6,30 @@ package com.comp3711.eva.biblibot;
 
 public class APAFormat implements Formatable {
 
-    public static String bookFormat(String lName, char fName, String pubDate, String title,
+    public static String bookFormat(String [] lName, String [] fName, String pubDate, String title,
                                     String subtitle, String location, String publisher) {
         String citation;
 
-        citation  = lName + ", ";
-        citation += fName + ". ";
+        if (fName[0].compareTo(publisher) == 0) {
+            citation ="";
+
+        } else if (fName.length == 1 && lName == null) {
+            citation = fName[0] + ". ";
+
+        } else if (fName.length == 1) {
+            citation = lName[0] + ", " + fName[0] + ". ";
+
+        } else if (fName.length == 2) {
+            citation = lName[0] + ", " + fName[0] + ", and " + fName[1] + " " + lName[1] + ". ";
+
+        } else {
+            citation = lName[0] + ", " + fName[0] + ", et al. ";
+
+        }
+//        citation  = lName + ", ";
+//        citation += fName + ". ";
         citation += "(" + pubDate + ") ";
-        citation += title;
+        citation += "<i>" + title + "</i>";
         if (subtitle != null)
             citation += ": " + subtitle + ".";
         citation += " " + location + ": ";

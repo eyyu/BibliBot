@@ -349,8 +349,9 @@ public class LoginPage extends AppCompatActivity implements LoaderCallbacks<Curs
     }
 
     public void generate(final View view) {
-        Intent export = new Intent(getApplicationContext(), CitationActivity.class);
+        Intent export = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(export);
+        finish();
     }
 
     public void projectView(final View view) {

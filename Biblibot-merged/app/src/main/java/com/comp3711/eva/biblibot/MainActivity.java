@@ -6,13 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class CitationActivity extends AppCompatActivity {
+import static com.comp3711.eva.biblibot.R.id.citationStyle;
+
+public class MainActivity extends AppCompatActivity {
 
     DatabaseHelper dbHelper;
 
@@ -25,6 +25,7 @@ public class CitationActivity extends AppCompatActivity {
         dbHelper.checkIsSet();
     }
 
+    // start scan
     public void scan(final View view) {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
@@ -45,7 +46,10 @@ public class CitationActivity extends AppCompatActivity {
         {
             super.onActivityResult(requestCode, resultCode, data);
 
-            Intent export = new Intent(getApplicationContext(), Export.class);
+            Intent export = new Intent(getApplicationContext(), ScanResultActivity.class);
+            Spinner citationStyle = (Spinner) findViewById(R.id.citationStyle);
+            int style = citationStyle.getSelectedItemPosition();
+            export.putExtra("style", style);
 
             //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
 
@@ -59,31 +63,22 @@ public class CitationActivity extends AppCompatActivity {
     }
 
     public void generate(final View view) {
-        Intent export = new Intent(getApplicationContext(), Export.class);
+        Intent export = new Intent(getApplicationContext(), ScanResultActivity.class);
 
+        // indicate which style to use for citation
         Spinner citationStyle = (Spinner) findViewById(R.id.citationStyle);
         int style = citationStyle.getSelectedItemPosition();
-        switch(style){
-            case 0:
-                // MLA
-                break;
-            case 1:
-                // APA
-                break;
-            case 2:
-                // Chicago
-                break;
-            default:
-                break;
-        }
+        export.putExtra("style", style);
         startActivity(export);
     }
 
+    // login page
     public void login(final View view) {
         Intent login = new Intent(getApplicationContext(), LoginPage.class);
         startActivity(login);
     }
 
+    // add and view projects
     public void projectView(final View view) {
         Intent projects = new Intent(getApplicationContext(), ProjectView.class);
         startActivity(projects);

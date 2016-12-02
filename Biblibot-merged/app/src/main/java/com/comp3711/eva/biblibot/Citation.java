@@ -25,7 +25,7 @@ public class Citation {
     private String    url;
     private String    doi;
     private String    pages;
-    private int       pubYear;
+    private String    pubYear;
     private int       pubMonth;
     private int       pubDay;
     private int       accessYear;
@@ -170,11 +170,11 @@ public class Citation {
         this.pages = pages;
     }
 
-    public int getPubYear() {
+    public String getPubYear() {
         return pubYear;
     }
 
-    public void setPubYear(int pubYear) {
+    public void setPubYear(String pubYear) {
         this.pubYear = pubYear;
     }
 

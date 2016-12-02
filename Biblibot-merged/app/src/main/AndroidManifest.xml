@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CitationActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,11 +23,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Export"
+            android:name=".ScanResultActivity"
             android:label="Export Page" />
-        <activity
-            android:name=".BarcodeScanner"
-            android:label="Barcode Scanner" />
         <activity android:name=".ProjectView" />
         <activity android:name=".LoginPage" />
         <activity android:name=".CitationView" />

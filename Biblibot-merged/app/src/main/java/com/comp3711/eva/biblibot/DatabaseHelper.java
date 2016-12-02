@@ -111,7 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     KEY_LOCATION      + " TEXT, " +
                     KEY_PUBLISHER     + " TEXT, " +
                     KEY_PUBDATE       + " TEXT, " +
-                    KEY_PUBYEAR       + " INTEGER, " +
+                    KEY_PUBYEAR       + " TEXT, " +
                     KEY_PUBDAY        + " INTEGER, " +
                     KEY_PUBMONTH      + " INTEGER, " +
                     KEY_ACCESSYEAR    + " INTEGER, " +
@@ -366,7 +366,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             cv.put ( KEY_PUBLISHER    , c.getPublisher());
         if(c.getPubDate() != null)
             cv.put ( KEY_PUBDATE      , c.getPubDate());
-        if(c.getPubYear() > 0)
+        if(c.getPubYear() != null)
             cv.put ( KEY_PUBYEAR      , c.getPubYear());
         if(c.getPubDay() > 0)
             cv.put ( KEY_PUBDAY       , c.getPubDay());
@@ -596,7 +596,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         citation.setLocation( (c.getString(c.getColumnIndex(KEY_LOCATION))));
         citation.setPublisher( (c.getString(c.getColumnIndex(KEY_PUBLISHER))));
         citation.setPubDate( (c.getString(c.getColumnIndex(KEY_PUBDATE))));
-        citation.setPubYear( (c.getInt(c.getColumnIndex(KEY_PUBYEAR))));
+        citation.setPubYear( (c.getString(c.getColumnIndex(KEY_PUBYEAR))));
         citation.setPubDay( (c.getInt(c.getColumnIndex(KEY_PUBDAY))));
         citation.setPubMonth( (c.getInt(c.getColumnIndex(KEY_PUBMONTH))));
         citation.setAccessYear( (c.getInt(c.getColumnIndex(KEY_ACCESSYEAR))));
@@ -682,7 +682,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             c.setDoi("testDoi1" + i);
             c.setLocation("testLocation1" + i);
             c.setPublisher("testPublisher1" + i);
-            c.setPubYear(2000 + i);
+//            c.setPubYear(2000 + i);
             c.setPubDay(i);
             c.setPubMonth(i + 10);
             c.setAccessYear(2000 + i);
