@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="New Project Name"
+        android:hint="@string/default_project_name"
         android:ems="10"
         android:id="@+id/newProjectName"
         android:textSize="14sp"

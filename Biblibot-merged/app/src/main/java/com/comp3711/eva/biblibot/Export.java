@@ -1,16 +1,13 @@
 package com.comp3711.eva.biblibot;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import android.os.AsyncTask;
 import java.io.BufferedReader;
@@ -26,6 +23,7 @@ import org.json.JSONObject;
 
 public class Export extends AppCompatActivity {
     private final String TAG = Export.class.getName();
+    private static String citation = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,34 +31,34 @@ public class Export extends AppCompatActivity {
         setContentView(R.layout.activity_export);
 
         final Button btn = (Button) findViewById(R.id.exportbtn);
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         Intent export = getIntent();
-        String scanned = export.getStringExtra("scanned");
         String isbn = export.getStringExtra("isbn");
 
         RetrieveFeedTask feedTask = new RetrieveFeedTask();
         feedTask.setISBN(isbn);
         feedTask.execute();
 
-        TextView resultText = (TextView) findViewById(R.id.citation_details);
-        final String citationDetails = (String) resultText.getText();
+//        TextView resultText = (TextView) findViewById(R.id.result_text);
+//        final String citationDetails = (String) resultText.getText();
 
         // Function for export
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // export options (with html if available)
                 Intent email = new Intent(Intent.ACTION_SEND);
-                email.putExtra(Intent.EXTRA_EMAIL, new String[]{ "to"});
+                email.setType("text/plain");
                 email.putExtra(Intent.EXTRA_SUBJECT, "Bibliography from Biblibot");
-                email.putExtra(Intent.EXTRA_TEXT, citationDetails);
-                email.setType("message/rfc822");
+                email.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(citation));
+                email.putExtra(Intent.EXTRA_HTML_TEXT, citation);
                 startActivity(Intent.createChooser(email, "Share Bibliography via: "));
             }
         });
 
     }
 
+    // build
     private class RetrieveFeedTask extends AsyncTask<Void, Void, String> {
         private String     ISBN;
         private String     results;
@@ -182,17 +180,19 @@ public class Export extends AppCompatActivity {
             return null;
         }
 
+        // set citation string to textview
         @Override
         protected void onPostExecute(String r) {
-            String citation;
             Citation cite;
-            TextView resultText = (TextView) findViewById(R.id.citation_details);
+            TextView resultText = (TextView) findViewById(R.id.result_text);
 
             cite = createCitation(jsonData, "MLA");
             if (cite != null) {
-                citation = MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
+                citation = "<br>";
+                citation += MLAFormat.bookFormat(cite.getfName(), cite.getlName(),
                         cite.getTitle(), cite.getPublisher(),
                         cite.getPubDate());
+                citation += "<br>";
                 resultText.setText(Html.fromHtml(citation));
                 final DatabaseHelper dbhelper = new DatabaseHelper(getApplicationContext());
                 dbhelper.insertCitation(cite, cite.getfName(), cite.getlName());
@@ -202,6 +202,7 @@ public class Export extends AppCompatActivity {
         }
     }
 
+    // start scan
     public void scan(final View view) {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);

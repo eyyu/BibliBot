@@ -110,7 +110,7 @@
 
         <ScrollView android:id="@+id/textAreaScroller"
             android:layout_width="fill_parent"
-            android:layout_height="173px"
+            android:layout_height="wrap_content"
             android:layout_x="0px"
             android:layout_y="25px"
             android:scrollbars="vertical"
@@ -122,13 +122,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/citation_details"
+                android:id="@+id/result_text"
                 android:textAlignment="center"
                 android:scrollbars="vertical"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_above="@+id/spinner7"
-                android:layout_alignParentTop="true" />
+                android:textSize="24sp" />
         </ScrollView>
 
     </RelativeLayout>

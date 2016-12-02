@@ -35,6 +35,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="add_to_project">Add to Project: </string>
+    <string name="default_project_name">Enter new Project name</string>
     <string name="export">Export</string>
     <string name="exportProject">Export this Project</string>
 </resources>

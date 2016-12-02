@@ -55,7 +55,6 @@ public class CitationActivity extends AppCompatActivity {
             export.putExtra("scanned", scanned);
             export.putExtra("isbn", isbn);
             startActivity(export);
-            finish();
         }
     }
 

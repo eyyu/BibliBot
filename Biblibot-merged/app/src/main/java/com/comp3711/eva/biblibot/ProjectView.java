@@ -1,28 +1,19 @@
 package com.comp3711.eva.biblibot;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v4.database.DatabaseUtilsCompat;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Html;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProjectView extends Activity {
 
@@ -40,13 +31,10 @@ public class ProjectView extends Activity {
             Toast.makeText(this, "database failed", Toast.LENGTH_LONG).show();
         }
 
-        //databaseHelper.checkIsSet();
-
         ListView lv = (ListView) findViewById(R.id.list_view);
         registerForContextMenu(lv);
 
         final String[] projectList = databaseHelper.getAllProjects();
-//        final String[] projectList = {"project 1", "project 2"};
 
         // Binding resources Array to ListAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, projectList);
@@ -66,6 +54,7 @@ public class ProjectView extends Activity {
         });
     }
 
+    // add new project
     public void addNewProject(View view){
         EditText newProjectName = (EditText) findViewById(R.id.newProjectName);
         String newProjName = newProjectName.getText().toString();
@@ -77,6 +66,7 @@ public class ProjectView extends Activity {
         startActivity(getIntent());
     }
 
+    // option for long click context menu: export
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
@@ -103,17 +93,19 @@ public class ProjectView extends Activity {
         // concatonate citations into one string
         for(String title : allCitationTitles){
             Citation c = databaseHelper.getCitationByTitle(title);
+            citation += "<br>";
             citation += (MLAFormat.bookFormat(c.getfName(), c.getlName(),
                     c.getTitle(), c.getPublisher(),
                     c.getPubDate()));
-            citation += "\n";
+            citation += "<br>";
         }
 
+        // export options (with html if available)
         Intent email = new Intent(Intent.ACTION_SEND);
-        email.putExtra(Intent.EXTRA_EMAIL, new String[]{ "to"});
+        email.setType("text/plain");
         email.putExtra(Intent.EXTRA_SUBJECT, "Bibliography from Biblibot");
-        email.putExtra(Intent.EXTRA_TEXT, citation);
-        email.setType("message/rfc822");
+        email.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(citation));
+        email.putExtra(Intent.EXTRA_HTML_TEXT, citation);
         startActivity(Intent.createChooser(email, "Share Bibliography via: "));
 
         return true;
