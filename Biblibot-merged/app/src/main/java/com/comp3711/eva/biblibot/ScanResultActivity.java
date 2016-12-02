@@ -209,8 +209,8 @@ public class ScanResultActivity extends AppCompatActivity {
                 publisher = volumeInfo.getString("publisher");
                 date = volumeInfo.getString("publishedDate");
                 if(date != null) {year = date.substring(0,4);}
-                subtitle = volumeInfo.getString("subtitle");
-                location = accessInfo.getString("country");
+                if(subtitle != null) {subtitle = volumeInfo.getString("subtitle");};
+                if(subtitle != null) {location = accessInfo.getString("country");};
                 String[] tmp;// = new String[citAuthors.length];//citAuthors[0].split(" ");
                 String[] first = new String[citAuthors.length];
                 String[] last = new String[citAuthors.length];
