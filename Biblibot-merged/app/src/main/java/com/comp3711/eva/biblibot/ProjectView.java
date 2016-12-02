@@ -81,7 +81,8 @@ public class ProjectView extends Activity {
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-        projToExport = info.toString();
+        String[] projectList = databaseHelper.getAllProjects();
+        projToExport = projectList[info.position];
 
         menu.setHeaderTitle(R.string.export);
         menu.add(Menu.NONE, 0, 0, R.string.exportProject);
@@ -102,10 +103,10 @@ public class ProjectView extends Activity {
         // concatonate citations into one string
         for(String title : allCitationTitles){
             Citation c = databaseHelper.getCitationByTitle(title);
-            citation.concat(MLAFormat.bookFormat(c.getfName(), c.getlName(),
+            citation += (MLAFormat.bookFormat(c.getfName(), c.getlName(),
                     c.getTitle(), c.getPublisher(),
                     c.getPubDate()));
-            citation.concat("\n");
+            citation += "\n";
         }
 
         Intent email = new Intent(Intent.ACTION_SEND);

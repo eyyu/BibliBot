@@ -595,6 +595,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         citation.setDoi( (c.getString(c.getColumnIndex(KEY_DOI))));
         citation.setLocation( (c.getString(c.getColumnIndex(KEY_LOCATION))));
         citation.setPublisher( (c.getString(c.getColumnIndex(KEY_PUBLISHER))));
+        citation.setPubDate( (c.getString(c.getColumnIndex(KEY_PUBDATE))));
         citation.setPubYear( (c.getInt(c.getColumnIndex(KEY_PUBYEAR))));
         citation.setPubDay( (c.getInt(c.getColumnIndex(KEY_PUBDAY))));
         citation.setPubMonth( (c.getInt(c.getColumnIndex(KEY_PUBMONTH))));
