@@ -157,30 +157,6 @@ public class Export extends AppCompatActivity {
                 title = volumeInfo.getString("title");
                 publisher = volumeInfo.getString("publisher");
                 date = volumeInfo.getString("publishedDate");
-                /*for (int i = 0; i < items.length(); i++) {
-                    JSONObject obj = items.optJSONObject(i);
-
-                    if (obj.has("authors")) {
-                        JSONArray authors = data.getJSONArray("authors");
-                        citAuthors = new String[authors.length()];
-                        for (int j = 0; i < authors.length(); i++)
-                        {
-                            citAuthors[i] = authors.getString(i);
-                        }
-                    }
-                    if (obj.has("title")) {
-                        title = obj.getString("title");
-                    }
-                    if (obj.has("publisher")) {
-                        publisher = obj.getString("publisher");
-                    }
-                    if (obj.has("publishedDate")) {
-                        date = obj.getString("publishedDate");
-                    }
-                }*/
-
-
-                //for (int i = 0; i < )
                 String[] tmp;// = new String[citAuthors.length];//citAuthors[0].split(" ");
                 String[] first = new String[citAuthors.length];
                 String[] last = new String[citAuthors.length];
@@ -196,9 +172,9 @@ public class Export extends AppCompatActivity {
                 citation.setTitle(title);
                 citation.setPublisher(publisher);
                 citation.setPubDate(date);
-
+                citation.setType("BOOK");
                 return citation;
-                //return MLAFormat.bookFormat(first, last, title, publisher, date);
+
             } catch (Exception e) {
                 Log.e(TAG, "createCitation: error parsing JSONObject ", e);
             }
@@ -218,6 +194,9 @@ public class Export extends AppCompatActivity {
                         cite.getTitle(), cite.getPublisher(),
                         cite.getPubDate());
                 resultText.setText(Html.fromHtml(citation));
+                final DatabaseHelper dbhelper = new DatabaseHelper(getApplicationContext());
+                dbhelper.insertCitation(cite, cite.getfName(), cite.getlName());
+                dbhelper.close();
             } else
                 resultText.setText("ERROR: Book data could not be found");
         }
